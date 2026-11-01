@@ -1,0 +1,104 @@
+{# Detail page: everything about one record, plus a delete button with a confirm popup. #}
+{# The catch_detail view in views.py sends "record" (only if it belongs to the logged-in user). #}
+
+{# Use the shared layout (navbar, alerts, footer) from base.html. #}
+{% extends "base.html" %}
+
+{# Browser tab text, e.g. "Walleye | Master Catch". #}
+{% block title %}{{ record.get_species_display }}{% endblock %}
+
+{# Everything below fills the content area of base.html. #}
+{% block content %}
+
+{# Center the card on the page. It is narrower on big screens, full width on phones. #}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+
+        {# Link back to the records table. &larr; draws a left arrow. #}
+        <a class="d-inline-block mb-3" href="{% url 'dashboard' %}">&larr; Back to My Records</a>
+
+        {# White card with a light shadow to hold the record. #}
+        <div class="card shadow-sm">
+
+            {# Green card header with the species name. #}
+            <div class="card-header bg-success text-white">
+                <h1 class="h4 mb-0">{{ record.get_species_display }}</h1>
+            </div>
+
+            {# p-4 adds padding inside the card. #}
+            <div class="card-body p-4">
+
+                {# Big length number so the record stands out. #}
+                <p class="display-6 mb-3">{{ record.length_inches }} in</p>
+
+                {# Description list: labels on the left (dt), values on the right (dd). #}
+                <dl class="row mb-0">
+                    {# Date formatted like "May 02, 2026". #}
+                    <dt class="col-sm-4">Date caught</dt>
+                    <dd class="col-sm-8">{{ record.date_caught|date:"M d, Y" }}</dd>
+
+                    {# Lake, river or pond name. #}
+                    <dt class="col-sm-4">Place caught</dt>
+                    <dd class="col-sm-8">{{ record.place_caught }}</dd>
+
+                    {# Notes keep the user's line breaks (linebreaksbr). "None" shows if empty. #}
+                    <dt class="col-sm-4">Notes</dt>
+                    <dd class="col-sm-8">{{ record.notes|linebreaksbr|default:"None" }}</dd>
+
+                    {# When the record was last saved (date and time). #}
+                    <dt class="col-sm-4">Last updated</dt>
+                    <dd class="col-sm-8">{{ record.updated_at|date:"M d, Y g:i A" }}</dd>
+                </dl>
+            </div>
+
+            {# Card footer with the action buttons. #}
+            <div class="card-footer bg-white d-flex gap-2">
+                {# Opens the Log a Catch form to try to beat this record. #}
+                <a class="btn btn-success" href="{% url 'add_catch' %}">Log a Bigger One</a>
+                {# Does NOT delete. It only opens the confirm popup with id="deleteModal". #}
+                <button type="button" class="btn btn-outline-danger ms-auto"
+                        data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    Delete
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{# Bootstrap modal (popup) that asks "are you sure?" before deleting. Hidden until Delete is clicked. #}
+{# aria-labelledby tells screen readers to use the modal title as its name. #}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    {# modal-dialog-centered puts the popup in the middle of the screen. #}
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            {# Popup title and the X close button. #}
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="deleteModalLabel">Delete this record?</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            {# Warning message that names the fish being deleted. #}
+            <div class="modal-body">
+                Your {{ record.length_inches }} in {{ record.get_species_display }} record will be
+                deleted for good. This can't be undone.
+            </div>
+
+            {# Popup buttons. #}
+            <div class="modal-footer">
+                {# Closes the popup and keeps the record. #}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                {# The real delete: a POST form, so just visiting the URL can't delete anything. #}
+                <form method="post" action="{% url 'delete_catch' record.pk %}">
+                    {# csrf_token: hidden code that proves the form came from this site. #}
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, delete it</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

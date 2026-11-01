@@ -1,12 +1,16 @@
+{# Reusable form layout. Pages add it with {% include "form_fields.html" %}. #}
+{# Errors about the whole form, e.g. "Not a new record..." or a wrong password. #}
 {% if form.non_field_errors %}
     <div class="alert alert-danger">
         {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
     </div>
 {% endif %}
+{# Each field gets a label, the input, optional help text, and its own errors. #}
 {% for field in form %}
     <div class="mb-3">
         <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
+        {# help_text comes from Django (e.g. the password rules), so |safe is OK here. #}
         {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
         {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
     </div>

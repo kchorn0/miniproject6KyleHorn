@@ -1,3 +1,4 @@
+{# Log in page. Django's LoginView fills in "form" and "next". #}
 {% extends "base.html" %}
 
 {% block title %}Log in{% endblock %}
@@ -9,8 +10,10 @@
             <div class="card-body p-4">
                 <h1 class="h3 mb-3">Log in</h1>
                 <form method="post">
+                    {# csrf_token: hidden code that proves the form came from this site. #}
                     {% csrf_token %}
                     {% include "form_fields.html" %}
+                    {# "next" = the page to return to after login. Django only allows pages on this site. #}
                     <input type="hidden" name="next" value="{{ next }}">
                     <button type="submit" class="btn btn-success w-100">Log in</button>
                 </form>

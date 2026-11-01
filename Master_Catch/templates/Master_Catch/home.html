@@ -1,14 +1,17 @@
+{# Home page: intro banner, three "how it works" cards, and the rules modal. #}
 {% extends "base.html" %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
+{# Intro banner. #}
 <div class="p-5 mb-4 bg-white rounded-3 shadow-sm">
     <h1 class="display-5 fw-bold">Only the big ones count.</h1>
     <p class="col-md-8 fs-5">
         Master Catch keeps one record per species: your longest fish.
         Log a bigger one and it takes the old record's place. Smaller fish stay in the lake.
     </p>
+    {# Logged-in users get shortcuts to their records; visitors get sign up / log in. #}
     {% if user.is_authenticated %}
         <a class="btn btn-success btn-lg" href="{% url 'add_catch' %}">Log a Catch</a>
         <a class="btn btn-outline-success btn-lg" href="{% url 'dashboard' %}">My Records</a>
@@ -16,11 +19,13 @@
         <a class="btn btn-success btn-lg" href="{% url 'register' %}">Sign up free</a>
         <a class="btn btn-outline-success btn-lg" href="{% url 'login' %}">Log in</a>
     {% endif %}
+    {# data-bs-toggle/target tell Bootstrap to open the modal with id="rulesModal". #}
     <button type="button" class="btn btn-link btn-lg" data-bs-toggle="modal" data-bs-target="#rulesModal">
         How it works
     </button>
 </div>
 
+{# Three cards side by side (they stack on phones). #}
 <div class="row g-4">
     <div class="col-md-4">
         <div class="card h-100 shadow-sm">
@@ -48,6 +53,7 @@
     </div>
 </div>
 
+{# Bootstrap modal (popup). Hidden until the "How it works" button is clicked. #}
 <div class="modal fade" id="rulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

@@ -29,8 +29,9 @@ load_dotenv(BASE_DIR / '.env')
 
 # --- Security ---------------------------------------------------------------
 
-# Used to sign login sessions and form tokens. It comes from .env, so it is
-# never on GitHub. The site refuses to start if it is missing.
+# Secret value Django uses to sign data it must trust later, such as
+# session data and password reset links. It comes from .env, so it is
+# never on GitHub. The site refuses to start if it is missing (KeyError).
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # Debug pages show code and settings when something breaks, so DEBUG is off
@@ -50,7 +51,7 @@ CSRF_TRUSTED_ORIGINS = ['https://dev-student10.fhsucyber.com']
 INSTALLED_APPS = [
     'django.contrib.admin',          # the /admin/ site
     'django.contrib.auth',           # users, passwords, login
-    'django.contrib.contenttypes',   # lets admin and auth track models
+    'django.contrib.contenttypes',   # list of models (used by admin/auth)
     'django.contrib.sessions',       # remembers who is logged in
     'django.contrib.messages',       # one-time alerts like "Record saved"
     'django.contrib.staticfiles',    # CSS/JS files (used by the admin)
@@ -59,14 +60,22 @@ INSTALLED_APPS = [
 
 # Code that runs on every request, in this order, before and after a view.
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',   # security headers
-    'whitenoise.middleware.WhiteNoiseMiddleware',      # serves static files
+    # Adds security headers, e.g. "don't guess file types" (nosniff).
+    'django.middleware.security.SecurityMiddleware',
+    # Serves the CSS/JS files from STATIC_ROOT (the admin's styling).
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # Loads the visitor's session (how the site remembers who they are).
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Small fixes, e.g. sends /about to /about/ (adds the end slash).
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',       # blocks forged forms
-    'django.contrib.auth.middleware.AuthenticationMiddleware',  # request.user
+    # Rejects POST forms that don't have a valid csrf_token (forged forms).
+    'django.middleware.csrf.CsrfViewMiddleware',
+    # Sets request.user to the logged-in user (or an anonymous user).
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Makes the one-time messages (success/error alerts) work.
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # no iframes
+    # Stops other sites from showing my pages inside an iframe.
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 # The file that holds the site's main list of URLs.
@@ -74,6 +83,7 @@ ROOT_URLCONF = 'mysite.urls'
 
 TEMPLATES = [
     {
+        # Use Django's own template language ({% %} tags, {{ }} values).
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # Project-wide templates (base.html, login, register) live here.
         'DIRS': [BASE_DIR / 'templates'],
@@ -99,8 +109,8 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # SQLite keeps the whole database in one file, db.sqlite3 (not on GitHub).
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',   # database type
+        'NAME': BASE_DIR / 'db.sqlite3',          # database file location
     }
 }
 
@@ -141,14 +151,15 @@ LOGOUT_REDIRECT_URL = 'home'
 # This makes Django's error messages use Bootstrap's red style.
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
-# On the live site (DEBUG off) login cookies are only sent over HTTPS.
+# On the live site (DEBUG off) the session (login) cookie and the CSRF
+# cookie are only sent over HTTPS. On my PC (DEBUG on) plain HTTP works.
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 
 
 # --- Language and time ------------------------------------------------------
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'         # US English
 TIME_ZONE = 'America/Chicago'   # Kansas (Central) time
 USE_I18N = True                 # allow translations
 USE_TZ = True                   # store times in UTC, show them in TIME_ZONE

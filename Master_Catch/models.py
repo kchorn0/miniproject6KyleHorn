@@ -13,16 +13,27 @@ from decimal import Decimal
 
 # settings.AUTH_USER_MODEL points to Django's built-in User model.
 from django.conf import settings
+# The error a validator raises to show a message on the form.
 from django.core.exceptions import ValidationError
+# Ready-made checks for the smallest and largest allowed length.
 from django.core.validators import MaxValueValidator, MinValueValidator
+# Field types (CharField, DateField...) and the Model base class.
 from django.db import models
+# timezone.localdate() gives today's date in the site's time zone.
 from django.utils import timezone
 
 
 def not_in_future(value):
     """Reject a catch date that is later than today.
 
-    Django runs this when a form checks the ``date_caught`` field.
+    Django runs this when the Log a Catch form (or the admin form)
+    validates ``date_caught``. A plain ``save()`` in code skips it.
+
+    Args:
+        value: The date entered for ``date_caught``.
+
+    Raises:
+        ValidationError: If the date is after today.
     """
     # localdate() is today's date in the site's time zone (Central).
     if value > timezone.localdate():
@@ -32,8 +43,9 @@ def not_in_future(value):
 class Catch(models.Model):
     """A user's personal-best (longest) fish for one species."""
 
-    # Choices for the species dropdown, in alphabetical order. The left
-    # value is saved in the database, the right value is what users see.
+    # Choices for the species dropdown, in alphabetical order by the name
+    # users see. The left value is saved in the database, the right value
+    # is what users see on the page.
     SPECIES_CHOICES = [
         ("barracuda", "Barracuda"),
         ("largemouth_bass", "Bass, Largemouth"),
@@ -97,8 +109,9 @@ class Catch(models.Model):
     )
     # Picked from the dropdown above, so spelling is always the same.
     species = models.CharField(max_length=30, choices=SPECIES_CHOICES)
-    # Up to 999.99 inches is possible in the database, but the validators
-    # only allow 0.25 to 150 inches.
+    # "length (inches)" is the label shown on forms. 5 digits with 2 after
+    # the decimal point fits up to 999.99, but the validators only allow
+    # 0.25 to 150 inches.
     length_inches = models.DecimalField(
         "length (inches)",
         max_digits=5,
@@ -123,7 +136,8 @@ class Catch(models.Model):
 
         # The admin shows "catches" instead of the default "catchs".
         verbose_name_plural = "catches"
-        # Default sort order: alphabetical by species.
+        # Default sort order: A to Z by the saved species value
+        # (e.g. "barracuda", "black_crappie", "blue_catfish"...).
         ordering = ["species"]
         # The database itself refuses a second row with the same owner
         # and species, so each user has only one record per species.

@@ -71,6 +71,7 @@ class Catch(models.Model):
         ("pink_salmon", "Salmon, Pink"),
         ("quananiche_salmon", "Salmon, Quananiche (Landlocked)"),
         ("sockeye_salmon", "Salmon, Sockeye (Red)"),
+        ("saugeye", "Saugeye"),
         ("snakehead", "Snakehead"),
         ("snook", "Snook"),
         ("steelhead", "Steelhead"),
@@ -83,6 +84,8 @@ class Catch(models.Model):
         ("palomino_trout", "Trout, Palomino"),
         ("rainbow_trout", "Trout, Rainbow"),
         ("sea_trout", "Trout, Sea/Speckled"),
+        ("walleye", "Walleye"),
+        ("wiper", "Wiper"),
     ]
 
     # The user who caught the fish. Deleting a user deletes their records.

@@ -1,0 +1,77 @@
+{# My Records page: a table of the user's biggest fish, one row per species. #}
+{# The dashboard view in views.py sends "records" (only this user's catches, longest first). #}
+
+{# Use the shared layout (navbar, alerts, footer) from base.html. #}
+{% extends "base.html" %}
+
+{# Browser tab text: "My Records | Master Catch". #}
+{% block title %}My Records{% endblock %}
+
+{# Everything below fills the content area of base.html. #}
+{% block content %}
+
+{# Header row: page title on the left, "Log a Catch" button on the right. #}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    {# Page heading. mb-0 removes the space under it so it lines up with the button. #}
+    <h1 class="mb-0">My Records</h1>
+    {# Green button that opens the Log a Catch form. #}
+    <a class="btn btn-success" href="{% url 'add_catch' %}">+ Log a Catch</a>
+</div>
+
+{# Only build the table if the user has at least one record. #}
+{% if records %}
+
+    {# Short summary. records|length counts the rows, which is also the number of species. #}
+    <p class="text-muted">Your biggest fish of each species ({{ records|length }} species), longest first.</p>
+
+    {# table-responsive lets the table scroll sideways on a phone instead of squishing. #}
+    <div class="table-responsive">
+
+        {# Bootstrap table: striped rows, highlight on hover, white background, light shadow. #}
+        <table class="table table-striped table-hover bg-white shadow-sm align-middle">
+
+            {# Column headings with a light green background. #}
+            <thead class="table-success">
+                <tr>
+                    {# scope="col" tells screen readers this heading belongs to its column. #}
+                    <th scope="col">Species</th>
+                    <th scope="col">Length (in)</th>
+                    <th scope="col">Date Caught</th>
+                    <th scope="col">Place Caught</th>
+                    {# Empty heading over the "View" buttons column. #}
+                    <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+
+            {# One table row per record. #}
+            <tbody>
+                {# Loop through each record the view sent. #}
+                {% for record in records %}
+                    <tr>
+                        {# get_species_display shows the nice name, e.g. "Largemouth Bass" instead of "largemouth_bass". #}
+                        <td class="fw-semibold">{{ record.get_species_display }}</td>
+                        {# Length in inches, e.g. 21.50. #}
+                        <td>{{ record.length_inches }}</td>
+                        {# Date formatted like "Jun 14, 2026". #}
+                        <td>{{ record.date_caught|date:"M d, Y" }}</td>
+                        {# Lake, river or pond name. Django auto-escapes it, so typed HTML can't run. #}
+                        <td>{{ record.place_caught }}</td>
+                        {# Button that opens this record's detail page, e.g. /records/5/. #}
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-success" href="{% url 'catch_detail' record.pk %}">View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+{# No records yet: show a friendly blue message instead of an empty table. #}
+{% else %}
+    <div class="alert alert-info">
+        No records yet. <a href="{% url 'add_catch' %}" class="alert-link">Log your first catch</a>.
+    </div>
+{% endif %}
+
+{% endblock %}

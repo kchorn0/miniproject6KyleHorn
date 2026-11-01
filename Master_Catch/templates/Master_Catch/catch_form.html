@@ -1,0 +1,53 @@
+{# Log a Catch page: the form for entering a fish. #}
+{# The add_catch view in views.py sends "form" (a CatchForm from forms.py). #}
+{# The "biggest only" rule runs in CatchForm.clean() when the form is submitted. #}
+
+{# Use the shared layout (navbar, alerts, footer) from base.html. #}
+{% extends "base.html" %}
+
+{# Browser tab text: "Log a Catch | Master Catch". #}
+{% block title %}Log a Catch{% endblock %}
+
+{# Everything below fills the content area of base.html. #}
+{% block content %}
+
+{# Center the form on the page. It is narrower on big screens, full width on phones. #}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+
+        {# White card with a light shadow to hold the form. #}
+        <div class="card shadow-sm">
+            {# p-4 adds padding inside the card. #}
+            <div class="card-body p-4">
+
+                {# Page heading. #}
+                <h1 class="h3 mb-2">Log a Catch</h1>
+                {# Reminder of the rule so users know why a fish might not save. #}
+                <p class="text-muted">
+                    It only counts if it's longer than your current record for that species.
+                </p>
+
+                {# method="post" sends the data to the add_catch view without putting it in the URL. #}
+                <form method="post">
+                    {# csrf_token: hidden code that proves the form came from this site. #}
+                    {% csrf_token %}
+                    {# Draws every field (species, length, date, place, notes) and any errors. #}
+                    {# A "Not a new record..." message shows at the top of the form. #}
+                    {% include "form_fields.html" %}
+
+                    {# Buttons side by side with a small gap. #}
+                    <div class="d-flex gap-2">
+                        {# Submits the form. #}
+                        <button type="submit" class="btn btn-success">Save Catch</button>
+                        {# Leaves without saving and goes back to My Records. #}
+                        <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Cancel</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

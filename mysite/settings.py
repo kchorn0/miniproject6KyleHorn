@@ -161,14 +161,3 @@ STATIC_URL = 'static/'
 # `collectstatic` copies all static files here. WhiteNoise serves them so
 # the admin keeps its styling even with DEBUG off.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-
-# --- Email ------------------------------------------------------------------
-
-# The site sends no real email. Anything Django tries to send is printed
-# in the terminal instead.
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}

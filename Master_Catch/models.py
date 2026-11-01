@@ -32,24 +32,57 @@ def not_in_future(value):
 class Catch(models.Model):
     """A user's personal-best (longest) fish for one species."""
 
-    # Choices for the species dropdown. The left value is saved in the
-    # database, the right value is what users see on the page.
+    # Choices for the species dropdown, in alphabetical order. The left
+    # value is saved in the database, the right value is what users see.
     SPECIES_CHOICES = [
-        ("largemouth_bass", "Largemouth Bass"),
-        ("smallmouth_bass", "Smallmouth Bass"),
-        ("white_bass", "White Bass"),
-        ("striped_bass", "Striped Bass"),
-        ("wiper", "Wiper"),
-        ("walleye", "Walleye"),
-        ("saugeye", "Saugeye"),
-        ("crappie", "Crappie"),
-        ("bluegill", "Bluegill"),
-        ("channel_catfish", "Channel Catfish"),
-        ("blue_catfish", "Blue Catfish"),
-        ("flathead_catfish", "Flathead Catfish"),
-        ("northern_pike", "Northern Pike"),
-        ("rainbow_trout", "Rainbow Trout"),
-        ("common_carp", "Common Carp"),
+        ("barracuda", "Barracuda"),
+        ("largemouth_bass", "Bass, Largemouth"),
+        ("peacock_bass", "Bass, Peacock"),
+        ("rock_bass", "Bass, Rock"),
+        ("sea_bass", "Bass, Sea"),
+        ("smallmouth_bass", "Bass, Smallmouth"),
+        ("striped_bass", "Bass, Striped"),
+        ("white_bass", "Bass, White"),
+        ("bluefish", "Bluefish"),
+        ("bluegill", "Bluegill (Bream, Brim)"),
+        ("bonefish", "Bonefish"),
+        ("bowfin", "Bowfin"),
+        ("common_carp", "Carp"),
+        ("blue_catfish", "Catfish, Blue"),
+        ("bullhead_catfish", "Catfish, Bullhead (Brown, Yellow & Black)"),
+        ("channel_catfish", "Catfish, Channel"),
+        ("flathead_catfish", "Catfish, Flathead"),
+        ("black_crappie", "Crappie (Black)"),
+        ("white_crappie", "Crappie (White)"),
+        ("grayling", "Grayling"),
+        ("jack_crevalle", "Jack Crevalle"),
+        ("mackerel", "Mackerel"),
+        ("musky", "Musky"),
+        ("white_perch", "Perch, White"),
+        ("yellow_perch", "Perch, Yellow"),
+        ("pickerel", "Pickerel"),
+        ("northern_pike", "Pike, Northern"),
+        ("redfish", "Redfish"),
+        ("atlantic_salmon", "Salmon, Atlantic"),
+        ("chinook_salmon", "Salmon, Chinook (King)"),
+        ("chum_salmon", "Salmon, Chum"),
+        ("coho_salmon", "Salmon, Coho (Silver)"),
+        ("kokanee_salmon", "Salmon, Kokanee"),
+        ("pink_salmon", "Salmon, Pink"),
+        ("quananiche_salmon", "Salmon, Quananiche (Landlocked)"),
+        ("sockeye_salmon", "Salmon, Sockeye (Red)"),
+        ("snakehead", "Snakehead"),
+        ("snook", "Snook"),
+        ("steelhead", "Steelhead"),
+        ("shellcracker", "Sunfish (Shellcracker)"),
+        ("brook_trout", "Trout, Brook"),
+        ("brown_trout", "Trout, Brown"),
+        ("cutthroat_trout", "Trout, Cutthroat"),
+        ("dolly_varden_trout", "Trout, Dolly Varden"),
+        ("lake_trout", "Trout, Lake"),
+        ("palomino_trout", "Trout, Palomino"),
+        ("rainbow_trout", "Trout, Rainbow"),
+        ("sea_trout", "Trout, Sea/Speckled"),
     ]
 
     # The user who caught the fish. Deleting a user deletes their records.
@@ -99,7 +132,7 @@ class Catch(models.Model):
         ]
 
     def __str__(self):
-        """Return a readable label, e.g. 'Walleye - 24.00 in (kyle)'."""
+        """Return a label, e.g. 'Bass, Largemouth - 24.00 in (kyle)'."""
         return (
             f"{self.get_species_display()} - "
             f"{self.length_inches} in ({self.owner})"

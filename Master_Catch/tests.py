@@ -27,12 +27,12 @@ from .models import Catch
 TEST_PASSWORD = "Test-Only-Pass-123"
 
 
-def catch_data(species="walleye", length="20", place="Wilson Lake",
+def catch_data(species="largemouth_bass", length="20", place="Wilson Lake",
                when="2026-05-02"):
     """Return form data for the Log a Catch form.
 
     Args:
-        species: Saved species value, e.g. "walleye".
+        species: Saved species value, e.g. "largemouth_bass".
         length: Length in inches as text, like a user would type it.
         place: Where the fish was caught.
         when: Catch date as YYYY-MM-DD text.
@@ -86,7 +86,7 @@ class BiggestOnlyRuleTests(TestCase):
         self.client.post(
             self.url, catch_data(length="24", place="Cedar Bluff")
         )
-        # Still only one walleye record for this user...
+        # Still only one largemouth bass record for this user...
         self.assertEqual(Catch.objects.filter(owner=self.user).count(), 1)
         # ...and it now has the new length and place.
         record = Catch.objects.get(owner=self.user)
@@ -95,8 +95,8 @@ class BiggestOnlyRuleTests(TestCase):
 
     def test_different_species_are_separate(self):
         """Each species has its own record."""
-        self.client.post(self.url, catch_data(species="walleye"))
-        self.client.post(self.url, catch_data(species="crappie", length="5"))
+        self.client.post(self.url, catch_data(species="largemouth_bass"))
+        self.client.post(self.url, catch_data(species="bluegill", length="5"))
         self.assertEqual(Catch.objects.filter(owner=self.user).count(), 2)
 
     def test_future_date_is_rejected(self):
@@ -114,7 +114,7 @@ class BiggestOnlyRuleTests(TestCase):
         other = User.objects.create_user("other", password=TEST_PASSWORD)
         self.client.force_login(other)
         response = self.client.post(self.url, catch_data(length="10"))
-        # The other user's first walleye saves fine...
+        # The other user's first largemouth bass saves fine...
         self.assertEqual(response.status_code, 302)
         # ...and my record is still 24 inches.
         mine = Catch.objects.get(owner=self.user)
@@ -123,13 +123,13 @@ class BiggestOnlyRuleTests(TestCase):
     def test_database_blocks_duplicate_species(self):
         """The unique constraint stops two records of one species."""
         Catch.objects.create(
-            owner=self.user, species="walleye", length_inches="20",
+            owner=self.user, species="largemouth_bass", length_inches="20",
             date_caught=date(2026, 5, 2), place_caught="Wilson Lake",
         )
         # assertRaises passes only if the code inside raises this error.
         with self.assertRaises(IntegrityError):
             Catch.objects.create(
-                owner=self.user, species="walleye", length_inches="25",
+                owner=self.user, species="largemouth_bass", length_inches="25",
                 date_caught=date(2026, 5, 3), place_caught="Wilson Lake",
             )
 
@@ -145,7 +145,7 @@ class AccessControlTests(TestCase):
         self.owner = User.objects.create_user("kyle", password=TEST_PASSWORD)
         self.other = User.objects.create_user("other", password=TEST_PASSWORD)
         self.record = Catch.objects.create(
-            owner=self.owner, species="walleye", length_inches="24",
+            owner=self.owner, species="largemouth_bass", length_inches="24",
             date_caught=date(2026, 5, 2), place_caught="Wilson Lake",
         )
         # Addresses for this record's detail and delete pages.
